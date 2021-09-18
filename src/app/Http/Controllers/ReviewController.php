@@ -6,6 +6,7 @@ use App\Models\Review;
 use App\Models\User;
 use App\Http\Requests\ReviewStoreRequest;
 use App\Http\Requests\ReviewUpdateRequest;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
@@ -34,7 +35,11 @@ class ReviewController extends Controller
             'review',
             'rating'
         ]));
-        return $this->showModelAsResponse($review);
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('public/images');
+            $review->image()->create(['url' => $path]);
+        }
+        return $this->showModelAsResponse($review->load('image'));
     }
 
     /**
@@ -45,7 +50,7 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        return $this->showModelAsResponse($review);
+        return $this->showModelAsResponse($review->load('image'));
     }
 
 
@@ -63,7 +68,14 @@ class ReviewController extends Controller
             'review',
             'rating'
         ]));
-        return $this->showModelAsResponse($review);
+        if ($request->hasFile('image')) {
+            if ($review->has('image')) {
+                Storage::delete($review->image()->url);
+            }
+            $path = $request->file('image')->store('public/images');
+            $review->image()->create(['url' => $path]);
+        }
+        return $this->showModelAsResponse($review->load('image'));
     }
 
     /**
@@ -74,6 +86,9 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
+        if ($review->has('image')) {
+            Storage::delete($review->image()->url);
+        }
         $review->delete();
         return $this->showModelAsResponse($review);
     }

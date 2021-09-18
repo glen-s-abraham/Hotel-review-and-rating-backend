@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Image;
 use App\Models\Review;
 
 class User extends Authenticatable
@@ -46,5 +47,9 @@ class User extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+    public function avatar()
+    {
+        return $this->morphOne(Image::class, 'imagable');
     }
 }

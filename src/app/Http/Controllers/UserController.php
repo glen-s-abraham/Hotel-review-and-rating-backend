@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -30,7 +31,11 @@ class UserController extends Controller
         $data = $request->only(['name', 'email']);
         $data['password'] = Hash::make($request->password);
         $user = User::create($data);
-        return $this->showModelAsResponse($user);
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('public/profiles');
+            $user->avatar()->create(['url' => $path]);
+        }
+        return $this->showModelAsResponse($user->load('avatar'));
     }
 
     /**
@@ -41,7 +46,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return $this->showModelAsResponse($user);
+        return $this->showModelAsResponse($user->load('avatar'));
     }
 
     /**
@@ -54,7 +59,14 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user)
     {
         $user->update($request->only(['name', 'email']));
-        return $this->showModelAsResponse($user);
+        if ($request->hasFile('avatar')) {
+            if ($user->has('avatar')) {
+                Storage::delete($user->avatar()->url);
+            }
+            $path = $request->file('avatar')->store('public/profiles');
+            $user->avatar()->create(['url' => $path]);
+        }
+        return $this->showModelAsResponse($user->load('avatar'));
     }
 
     /**
@@ -65,6 +77,9 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if ($user->has('avatar')) {
+            Storage::delete($user->avatar()->url);
+        }
         $user->delete();
         return $this->showModelAsResponse($user);
     }
