@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
     /**
      * Display a listing of the resource.
      *

@@ -8,6 +8,10 @@ use Illuminate\Validation\ValidationException;
 
 class CommentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
     /**
      * Update the specified resource in storage.
      *

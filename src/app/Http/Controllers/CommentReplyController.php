@@ -8,6 +8,10 @@ use Illuminate\Validation\ValidationException;
 
 class CommentReplyController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
     /**
      * Display a listing of the resource.
      *

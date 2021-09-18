@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Log;
 
 class ReviewLikesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
     public function index(Review $review)
     {
         return $this->successResponse(

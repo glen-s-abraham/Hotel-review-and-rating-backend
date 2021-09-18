@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->only(['index', 'show', 'update', 'destroy']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -44,9 +48,9 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show()
     {
-        return $this->showModelAsResponse($user->load('avatar'));
+        return $this->showModelAsResponse(auth()->user()->load('avatar'));
     }
 
     /**
@@ -56,12 +60,13 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(UserUpdateRequest $request)
     {
+        $user = auth()->user();
         $user->update($request->only(['name', 'email']));
         if ($request->hasFile('avatar')) {
             if ($user->has('avatar')) {
-                Storage::delete($user->avatar()->url);
+                Storage::delete($user->avatar()->pluck('url')[0]);
             }
             $path = $request->file('avatar')->store('public/profiles');
             $user->avatar()->create(['url' => $path]);
@@ -75,10 +80,12 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy()
     {
+        $user = auth()->user();
         if ($user->has('avatar')) {
-            Storage::delete($user->avatar()->url);
+            Storage::delete($user->avatar()->pluck('url')[0]);
+            return 'file present';
         }
         $user->delete();
         return $this->showModelAsResponse($user);
