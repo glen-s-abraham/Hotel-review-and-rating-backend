@@ -18,3 +18,5 @@ Route::resource('users', 'UserController');
 Route::resource('reviews', 'ReviewController');
 Route::get('review/{review}/comments', 'ReviewCommentController@index');
 Route::post('review/{review}/comments', 'ReviewCommentController@store');
+Route::get('comment/{comment}/replies', 'CommentReplyController@index');
+Route::post('comment/{comment}/replies', 'CommentReplyController@store');
