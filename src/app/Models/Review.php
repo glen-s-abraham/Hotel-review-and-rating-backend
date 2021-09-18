@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Image;
 
 class Review extends Model
@@ -24,5 +25,9 @@ class Review extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likable');
     }
 }

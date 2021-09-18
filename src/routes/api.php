@@ -21,3 +21,5 @@ Route::post('review/{review}/comments', 'ReviewCommentController@store');
 Route::get('comment/{comment}/replies', 'CommentReplyController@index');
 Route::post('comment/{comment}/replies', 'CommentReplyController@store');
 Route::resource('comments', 'CommentController')->only(['update', 'destroy']);
+Route::get('review/{review}/likes', 'ReviewLikesController@index');
+Route::put('review/{review}/likes', 'ReviewLikesController@toggleReviewLike');
